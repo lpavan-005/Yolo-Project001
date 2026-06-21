@@ -64,40 +64,24 @@ export function BottomSheet({
     const newTranslate = baseTranslate + dragOffset;
     const newPercent = (newTranslate / sheetH) * 100;
 
-    // Determine nearest snap by what direction they're dragging
-    const velocity = dragOffset;
-    let next: SnapPoint = snap;
-
-    if (velocity > 80) {
-      // dragging down (closing direction)
-      if (snap === 'full') next = 'half';
-      else if (snap === 'half') next = 'peek';
-      else if (snap === 'peek') {
-        onClose();
-        dragStartRef.current = null;
-        setDragOffset(0);
-        setDragging(false);
-        return;
-      }
-    } else if (velocity < -80) {
-      // dragging up (opening direction)
-      if (snap === 'peek') next = 'half';
-      else if (snap === 'half') next = 'full';
+    // Dragged most of the way down past peek -> close entirely.
+    // Otherwise always snap to whichever defined point is visually nearest
+    // to where the finger let go. No separate "flick" vs "small drag" cases —
+    // that mixed logic was the source of the inconsistent feel.
+    if (newPercent > 88) {
+      onClose();
     } else {
-      // Small drag - snap to nearest
-      const distances = (Object.keys(SNAP_PERCENTS) as SnapPoint[])
-        .filter(k => k !== 'closed')
+      const distances = (['peek', 'half', 'full'] as SnapPoint[])
         .map(k => ({ key: k, dist: Math.abs(SNAP_PERCENTS[k] - newPercent) }));
       distances.sort((a, b) => a.dist - b.dist);
-      next = distances[0].key;
+      onSnapChange(distances[0].key);
     }
 
-    onSnapChange(next);
     dragStartRef.current = null;
     setDragOffset(0);
     setDragging(false);
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-  }, [dragOffset, snap, onSnapChange, onClose]);
+  }, [dragOffset, onSnapChange, onClose]);
 
   // Translate calculation including live drag
   const translateY = dragging && dragStartRef.current

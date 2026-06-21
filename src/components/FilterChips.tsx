@@ -13,8 +13,8 @@ const ORDER: FilterValue[] = ['all', 'day1', 'day2', 'food', 'deep'];
 export function FilterChips({ value, onChange }: FilterChipsProps) {
   const counts: Record<FilterValue, number> = {
     all: PLACES.length,
-    day1: PLACES.filter(p => p.cat === 'day1').length,
-    day2: PLACES.filter(p => p.cat === 'day2').length,
+    day1: PLACES.filter(p => p.cat === 'day1' || p.linkedDay === 'day1').length,
+    day2: PLACES.filter(p => p.cat === 'day2' || p.linkedDay === 'day2').length,
     food: PLACES.filter(p => p.cat === 'food').length,
     deep: PLACES.filter(p => p.cat === 'deep').length,
   };

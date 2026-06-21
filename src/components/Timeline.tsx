@@ -17,6 +17,10 @@ export function Timeline({ day, onSelect, selectedId }: TimelineProps) {
     () => PLACES.filter(p => p.cat === day).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [day]
   );
+  const eveningPicks = useMemo(
+    () => PLACES.filter(p => p.linkedDay === day),
+    [day]
+  );
 
   return (
     <div className="timeline">
@@ -44,7 +48,7 @@ export function Timeline({ day, onSelect, selectedId }: TimelineProps) {
                 <div className="stop__dot" style={{ background: meta.color }}>
                   <span className="mono">{p.order}</span>
                 </div>
-                {idx < stops.length - 1 && (
+                {(idx < stops.length - 1 || eveningPicks.length > 0) && (
                   <div className="stop__line" style={{ background: meta.color }} />
                 )}
               </div>
@@ -72,6 +76,47 @@ export function Timeline({ day, onSelect, selectedId }: TimelineProps) {
           );
         })}
       </ol>
+
+      {eveningPicks.length > 0 && (
+        <div className="evening-picks">
+          <div className="evening-picks__head">
+            <div className="stop__rail">
+              <div className="stop__dot stop__dot--choice" style={{ background: 'var(--copper)' }}>
+                <span className="mono">?</span>
+              </div>
+            </div>
+            <div>
+              <div className="evening-picks__eyebrow mono">EVENING &middot; PICK ONE</div>
+              <p className="evening-picks__note">
+                Not a fixed stop — whichever fits the mood once you're back in town.
+              </p>
+            </div>
+          </div>
+          <div className="evening-picks__grid">
+            {eveningPicks.map(p => {
+              const isSelected = selectedId === p.id;
+              return (
+                <button
+                  key={p.id}
+                  className={`evening-pick ${isSelected ? 'is-selected' : ''}`}
+                  onClick={() => onSelect(p)}
+                >
+                  <SmartImage
+                    primary={p.photo}
+                    fallback={p.fallbackPhoto}
+                    cat={p.cat as Category}
+                    className="evening-pick__photo"
+                    variant="raw"
+                    alt={p.name}
+                  />
+                  <div className="evening-pick__name display">{p.name}</div>
+                  <p className="evening-pick__note">{truncate(p.note, 80)}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

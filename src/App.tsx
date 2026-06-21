@@ -16,7 +16,7 @@ type View = 'map' | 'timeline-day1' | 'timeline-day2';
 export default function App() {
   const [filter, setFilter] = useState<FilterValue>('all');
   const [selected, setSelected] = useState<Place | null>(null);
-  const [snap, setSnap] = useState<SnapPoint>('half');
+  const [snap, setSnap] = useState<SnapPoint>('peek');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [view, setView] = useState<View>('map');
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 880);
@@ -29,7 +29,7 @@ export default function App() {
 
   const onSelectPlace = useCallback((p: Place) => {
     setSelected(p);
-    setSnap(prev => (prev === 'closed' ? 'half' : prev));
+    setSnap('peek');
     if (!isDesktop) setDrawerOpen(false);
     setView('map');
   }, [isDesktop]);
@@ -84,9 +84,11 @@ export default function App() {
         </button>
       </header>
 
-      <div className="chipbar">
-        <FilterChips value={filter} onChange={setFilter} />
-      </div>
+      {view === 'map' && (
+        <div className="chipbar">
+          <FilterChips value={filter} onChange={setFilter} />
+        </div>
+      )}
 
       {view !== 'map' && (
         <div className="timeline-overlay">

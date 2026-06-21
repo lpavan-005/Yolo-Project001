@@ -15,6 +15,10 @@ export interface Place {
   maps: string;
   /** Fallback hero image from Unsplash - free, stable, atmospheric */
   fallbackPhoto: string;
+  /** For food/deep items that are specifically an evening option for a given day,
+   *  without changing their primary category. Keeps them flexible (pick one)
+   *  while still surfacing them in that day's timeline/filter. */
+  linkedDay?: 'day1' | 'day2';
 }
 
 const G = 'https://lh3.googleusercontent.com/place-photos/';
@@ -272,28 +276,28 @@ export const PLACES: Place[] = [
     maps: 'https://maps.google.com/?cid=891907338336742259',
   },
   {
-    id: 'cafe1947', cat: 'food', sub: 'Dinner', name: 'Cafe 1947', lat: 32.282985, lng: 77.1805034,
+    id: 'cafe1947', cat: 'food', sub: 'Dinner', linkedDay: 'day1', name: 'Cafe 1947', lat: 32.282985, lng: 77.1805034,
     photo: G + 'AJRVUZPabnJaNHKJuwO4saqRFsGUhXPE4NIbCY-SAQYXhKZkabRBitttBuxmrjFS_hGQspybs9JCP_OSojIq9Wk_T1eZGyS_XrvrSRpMxfWxc6kQTn-qy5QXDuhFSFB7Rxrk1TENU0j4BAq2GvRSMZs=s500',
     fallbackPhoto: nextFallback('food'),
     note: 'Riverside on the Beas, in Bahang. Italian-leaning, live music most evenings. Go for the setting first, the food second — both are good, but the river-and-firepit atmosphere is the actual reason.',
     maps: 'https://maps.google.com/?cid=16349313308763280428',
   },
   {
-    id: 'lazydog', cat: 'food', sub: 'Dinner', name: 'The Lazy Dog Lounge', lat: 32.253047, lng: 77.1767637,
+    id: 'lazydog', cat: 'food', sub: 'Dinner', linkedDay: 'day1', name: 'The Lazy Dog Lounge', lat: 32.253047, lng: 77.1767637,
     photo: G + 'AJRVUZMFKXV21uckMJ0hVg4aNdElEhzmy3B9QIfG7OjUL0Aex3wAKcaDfP4mrOCpZ8hp1WNNw0SRq957cKZgQ3wJrti650_7yO543igEpLw_G686bBWm7imqh1kGulH1LCabsQXkZAkejJYHsbgzhRD2hzQcsA=s500',
     fallbackPhoto: nextFallback('food'),
     note: 'Old Manali, riverside. The most-cited single most iconic Old Manali night out. Live music, grilled trout, and the kind of crowd that makes you remember the evening for the right reasons.',
     maps: 'https://maps.google.com/?cid=8922124573768640723',
   },
   {
-    id: 'johnsons', cat: 'food', sub: 'Dinner', name: 'Johnson\'s Cafe Hotel & Bar', lat: 32.2475075, lng: 77.1873987,
+    id: 'johnsons', cat: 'food', sub: 'Dinner', linkedDay: 'day1', name: 'Johnson\'s Cafe Hotel & Bar', lat: 32.2475075, lng: 77.1873987,
     photo: G + 'AJRVUZPt7tuSBQTSF7BQyF_OsJZWf7zCtBDB9_2nunTpaj1u8TI1xhQzLf1OTd19u2goJhcZhx5K31Gaegwcjg0iUR3fOVF6rfcRkxGB0-TZ3vsaqltEEaG47xEHh1YHMPYFhYQ3CrpqJTOvW4it5A=s500',
     fallbackPhoto: nextFallback('food'),
     note: 'Old colonial-bungalow institution on Circuit House Road. Garden seating, trout grilled to order, a quieter atmosphere than the Old Manali riverside scene. The romantic option.',
     maps: 'https://maps.google.com/?cid=16493807488697696469',
   },
   {
-    id: 'khyber', cat: 'food', sub: 'Dinner', name: 'Khyber Restaurant & Bar', lat: 32.2457586, lng: 77.1896348,
+    id: 'khyber', cat: 'food', sub: 'Dinner', linkedDay: 'day1', name: 'Khyber Restaurant & Bar', lat: 32.2457586, lng: 77.1896348,
     photo: G + 'AJRVUZOaXbGDmiswQMaBiq63ZkZYEyV14qkRPngMczXDJ1uZzR2YoyLJRExsL4FJBm6sA2XolaVTdMC3-M994olcKtYDEvFsGWmhJA2B-OvY1MOnBIIZ7bzA62rRxIZ24EjBLuB-F9gDy_zn2wsK=s500',
     fallbackPhoto: nextFallback('food'),
     note: 'Mall Road, known for tandoori trout, with a view over the street. Honest note: recent reviews are mixed (3.4 stars), the older reputation was stronger. Worth a look, not a sure bet.',

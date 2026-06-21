@@ -43,9 +43,19 @@ export function MapCanvas({ filter, selectedId, onMarkerClick, bottomInset = 0 }
       subdomains: 'abcd',
     }).addTo(map);
 
-    L.control.zoom({ position: 'topright' }).addTo(map);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     mapRef.current = map;
+
+    // Labels only show once zoomed in enough to be legible — otherwise
+    // a tight cluster (e.g. 8 food pins in Old Manali) becomes unreadable noise.
+    const LABEL_ZOOM_THRESHOLD = 14;
+    const updateLabelVisibility = () => {
+      const el = map.getContainer();
+      el.classList.toggle('is-zoomed-in', map.getZoom() >= LABEL_ZOOM_THRESHOLD);
+    };
+    map.on('zoomend', updateLabelVisibility);
+    updateLabelVisibility();
 
     // Build markers
     PLACES.forEach(p => {
@@ -66,6 +76,12 @@ export function MapCanvas({ filter, selectedId, onMarkerClick, bottomInset = 0 }
 
       const marker = L.marker([p.lat, p.lng], { icon }).addTo(map);
       marker.on('click', () => onMarkerClick(p));
+      marker.bindTooltip(p.name, {
+        permanent: true,
+        direction: 'top',
+        offset: [0, -38],
+        className: `pin-label pin-label--${p.cat}`,
+      });
       markersRef.current[p.id] = marker;
     });
 
@@ -108,7 +124,7 @@ export function MapCanvas({ filter, selectedId, onMarkerClick, bottomInset = 0 }
 
     Object.entries(markersRef.current).forEach(([id, marker]) => {
       const place = PLACES.find(p => p.id === id)!;
-      const show = filter === 'all' || place.cat === filter;
+      const show = filter === 'all' || place.cat === filter || place.linkedDay === filter;
       const has = map.hasLayer(marker);
       if (show && !has) marker.addTo(map);
       else if (!show && has) map.removeLayer(marker);
@@ -122,7 +138,7 @@ export function MapCanvas({ filter, selectedId, onMarkerClick, bottomInset = 0 }
     });
 
     // Fit bounds when filter changes (and there's something to fit)
-    const visible = PLACES.filter(p => filter === 'all' || p.cat === filter);
+    const visible = PLACES.filter(p => filter === 'all' || p.cat === filter || p.linkedDay === filter);
     if (visible.length > 1 && filter !== 'all') {
       const bounds = L.latLngBounds(visible.map(p => [p.lat, p.lng]));
       map.flyToBounds(bounds, {
@@ -143,6 +159,9 @@ export function MapCanvas({ filter, selectedId, onMarkerClick, bottomInset = 0 }
       if (!el) return;
       const pin = el.querySelector('.map-pin');
       if (pin) pin.classList.toggle('is-selected', id === selectedId);
+
+      const tooltipEl = marker.getTooltip()?.getElement();
+      if (tooltipEl) tooltipEl.classList.toggle('is-force-visible', id === selectedId);
     });
 
     if (selectedId) {

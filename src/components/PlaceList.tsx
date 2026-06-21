@@ -15,7 +15,9 @@ export function PlaceList({ filter, selectedId, onSelect }: PlaceListProps) {
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
-    let result = filter === 'all' ? PLACES : PLACES.filter(p => p.cat === filter);
+    let result = filter === 'all'
+      ? PLACES
+      : PLACES.filter(p => p.cat === filter || p.linkedDay === filter);
     const q = query.trim().toLowerCase();
     if (q) {
       result = result.filter(p =>
