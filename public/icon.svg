@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2A3A32"/>
+      <stop offset="100%" stop-color="#1F2A24"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g)"/>
+  <g transform="translate(80,160)">
+    <!-- Mountain silhouette -->
+    <polygon points="0,260 80,120 130,200 200,80 280,200 352,120 352,260" fill="#5687A8" opacity="0.85"/>
+    <polygon points="0,260 100,160 180,220 260,140 352,220 352,260" fill="#FAFAF7" opacity="0.95"/>
+    <!-- snow peaks -->
+    <polygon points="180,80 200,40 220,80 200,90" fill="#FAFAF7"/>
+    <!-- prayer flag accents -->
+    <rect x="40" y="40" width="14" height="38" fill="#D4933A" rx="2"/>
+    <rect x="58" y="36" width="14" height="42" fill="#A85432" rx="2"/>
+    <rect x="76" y="42" width="14" height="36" fill="#5687A8" rx="2"/>
+  </g>
+</svg>
