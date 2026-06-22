@@ -904,6 +904,223 @@
   line-height: 1.35;
 }
 
+/* ---------- Floating place card (mobile) ---------- */
+.card-outer {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.place-card {
+  pointer-events: auto;
+  background: var(--paper);
+  border: 0.5px solid var(--line);
+  border-radius: 20px;
+  box-shadow:
+    0 -1px 12px rgba(27,38,32,0.07),
+    0 8px 32px rgba(27,38,32,0.16);
+  overflow: hidden;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  position: relative;
+}
+.place-card:active { cursor: grabbing; }
+
+.place-card__grip {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3.5px;
+  border-radius: 2px;
+  background: var(--line-strong);
+  opacity: 0.65;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Photo */
+.place-card__photo-wrap {
+  position: relative;
+  height: 118px;
+  overflow: hidden;
+  transition: height 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.is-expanded .place-card__photo-wrap {
+  height: 0;
+}
+.place-card__photo {
+  width: 100%;
+  height: 100%;
+}
+.place-card__photo-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.place-card__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.place-card__time-chip {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: rgba(250,250,247,0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink);
+}
+
+/* Body */
+.place-card__body {
+  padding: 12px 14px 0;
+}
+.place-card__title {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.place-card__note-wrap {
+  position: relative;
+}
+.place-card__note-scroll {
+  max-height: 40px;
+  overflow: hidden;
+  transition: max-height 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.place-card__note-scroll.is-open {
+  max-height: 180px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+.place-card__note {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.52;
+  margin: 0;
+}
+.place-card__note-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: linear-gradient(to bottom, transparent, var(--paper));
+  pointer-events: none;
+}
+.place-card__read-more {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: none;
+  border: none;
+  padding: 5px 0 2px;
+  cursor: pointer;
+  display: block;
+}
+
+/* Actions */
+.place-card__actions {
+  padding: 8px 14px 10px;
+  border-top: 0.5px solid var(--line);
+  margin-top: 8px;
+}
+.place-card__maps-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 11px;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.12s;
+}
+.place-card__maps-btn:active { opacity: 0.88; }
+
+/* Nav strip */
+.place-card__nav {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px 10px;
+  gap: 6px;
+}
+.place-card__nav-arrow {
+  flex: 0 0 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--paper-warm);
+  border: 0.5px solid var(--line);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.place-card__nav-arrow:active { background: var(--line); }
+
+.place-card__nav-mid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.place-card__dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.place-card__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  transition: width 0.18s, border-radius 0.18s, background 0.18s;
+}
+.place-card__counter {
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+}
+
 /* ---------- Desktop layout ---------- */
 .app--desktop {
   display: grid;

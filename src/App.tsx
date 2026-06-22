@@ -4,8 +4,7 @@ import { FilterChips } from './components/FilterChips';
 import type { FilterValue } from './components/FilterChips';
 import { PlaceList } from './components/PlaceList';
 import { Timeline } from './components/Timeline';
-import { BottomSheet } from './components/BottomSheet';
-import type { SnapPoint } from './components/BottomSheet';
+import { PlaceCard } from './components/PlaceCard';
 import { PlaceDetail } from './components/PlaceDetail';
 import { PLACES } from './data/places';
 import type { Place } from './data/places';
@@ -14,11 +13,11 @@ import { MenuIcon, XIcon, MapIcon, ListIcon } from './icons';
 type View = 'map' | 'timeline-day1' | 'timeline-day2';
 
 export default function App() {
-  const [filter, setFilter] = useState<FilterValue>('all');
-  const [selected, setSelected] = useState<Place | null>(null);
-  const [snap, setSnap] = useState<SnapPoint>('peek');
+  const [filter, setFilter]       = useState<FilterValue>('all');
+  const [selected, setSelected]   = useState<Place | null>(null);
+  const [activeCardIdx, setActiveCardIdx] = useState<number>(-1);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [view, setView] = useState<View>('map');
+  const [view, setView]           = useState<View>('map');
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 880);
 
   useEffect(() => {
@@ -27,24 +26,56 @@ export default function App() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  // Ordered list of places for the current filter — matches what PlaceList shows
+  const filteredPlaces = useMemo<Place[]>(() => {
+    const day1 = PLACES.filter(p => p.cat === 'day1').sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const day2 = PLACES.filter(p => p.cat === 'day2').sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const food = PLACES.filter(p => p.cat === 'food');
+    const deep = PLACES.filter(p => p.cat === 'deep');
+    const linked1 = PLACES.filter(p => p.linkedDay === 'day1');
+    const linked2 = PLACES.filter(p => p.linkedDay === 'day2');
+    switch (filter) {
+      case 'day1': return [...day1, ...linked1];
+      case 'day2': return [...day2, ...linked2];
+      case 'food': return food;
+      case 'deep': return deep;
+      default:     return [...day1, ...day2, ...food, ...deep];
+    }
+  }, [filter]);
+
+  // When filter changes keep card open if selected place is still in list
+  useEffect(() => {
+    if (selected) {
+      const idx = filteredPlaces.findIndex(p => p.id === selected.id);
+      if (idx >= 0) setActiveCardIdx(idx);
+      else { setSelected(null); setActiveCardIdx(-1); }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredPlaces]);
+
   const onSelectPlace = useCallback((p: Place) => {
+    const idx = filteredPlaces.findIndex(fp => fp.id === p.id);
     setSelected(p);
-    setSnap('peek');
+    setActiveCardIdx(idx >= 0 ? idx : 0);
     if (!isDesktop) setDrawerOpen(false);
     setView('map');
-  }, [isDesktop]);
+  }, [filteredPlaces, isDesktop]);
 
   const onCloseDetail = useCallback(() => {
     setSelected(null);
+    setActiveCardIdx(-1);
   }, []);
 
-  const bottomInset = useMemo(() => {
-    if (!selected || isDesktop) return 0;
-    if (snap === 'peek') return window.innerHeight * 0.22;
-    if (snap === 'half') return window.innerHeight * 0.55;
-    if (snap === 'full') return window.innerHeight * 0.92;
-    return 0;
-  }, [snap, selected, isDesktop]);
+  const onCardIndexChange = useCallback((idx: number) => {
+    const place = filteredPlaces[idx];
+    if (place) {
+      setSelected(place);
+      setActiveCardIdx(idx);
+    }
+  }, [filteredPlaces]);
+
+  // Fixed inset: card is always ~250px + 12px margin from bottom on mobile
+  const bottomInset = (!isDesktop && activeCardIdx >= 0) ? 268 : 0;
 
   if (isDesktop) {
     return <DesktopLayout
@@ -134,14 +165,14 @@ export default function App() {
         />
       </aside>
 
-      <BottomSheet
-        open={!!selected}
-        snap={snap}
-        onSnapChange={setSnap}
-        onClose={onCloseDetail}
-      >
-        {selected && <PlaceDetail place={selected} expanded={snap === 'full'} />}
-      </BottomSheet>
+      {activeCardIdx >= 0 && filteredPlaces.length > 0 && (
+        <PlaceCard
+          places={filteredPlaces}
+          activeIndex={activeCardIdx}
+          onIndexChange={onCardIndexChange}
+          onClose={onCloseDetail}
+        />
+      )}
     </div>
   );
 }
